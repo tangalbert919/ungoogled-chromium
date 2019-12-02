@@ -1,5 +1,5 @@
 FROM alpine
 
-COPY devutils/create_new_tag.sh /create_new_tag.sh
+COPY devutils/entrypoint.sh /entrypoint.sh
 
-ENTRYPOINT ["/create_new_tag.sh"]
+ENTRYPOINT ["/entrypoint.sh"]

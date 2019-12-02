@@ -2,8 +2,9 @@
 # This script is for tag automation.
 
 tags=$(git describe --tags `git rev-list --tags --max-count=1`)
-
+echo $tags
 commit=$(git rev-parse HEAD)
+echo $commit
 
 # Create next tag.
 CHROMIUM_VERSION=$(cat chromium_version.txt)

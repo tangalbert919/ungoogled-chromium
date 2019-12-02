@@ -13,6 +13,7 @@ UPDATED_TAG="${CHROMIUM_VERSION}-${UNGOOGLED_REVISION}"
 echo $UPDATED_TAG
 
 # Post a new tag to repo through GitHub API
+echo $REPO_OWNER
 curl -s -X POST https://api.github.com/repos/$REPO_OWNER/ungoogled-chromium/git/refs \
 -H "Authorization: token $GITHUB_TOKEN" \
 -d @- << EOF

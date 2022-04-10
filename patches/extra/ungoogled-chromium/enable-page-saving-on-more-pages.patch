@@ -2,21 +2,20 @@
 
 --- a/chrome/browser/ui/browser_commands.cc
 +++ b/chrome/browser/ui/browser_commands.cc
-@@ -377,12 +377,6 @@ int GetContentRestrictions(const Browser
+@@ -443,11 +443,6 @@ int GetContentRestrictions(const Browser
      CoreTabHelper* core_tab_helper =
          CoreTabHelper::FromWebContents(current_tab);
      content_restrictions = core_tab_helper->content_restrictions();
 -    NavigationEntry* last_committed_entry =
 -        current_tab->GetController().GetLastCommittedEntry();
 -    if (!content::IsSavableURL(
--            last_committed_entry ? last_committed_entry->GetURL() : GURL()) ||
--        current_tab->ShowingInterstitialPage())
+-            last_committed_entry ? last_committed_entry->GetURL() : GURL()))
 -      content_restrictions |= CONTENT_RESTRICTION_SAVE;
-     if (current_tab->ShowingInterstitialPage())
-       content_restrictions |= CONTENT_RESTRICTION_PRINT;
    }
-@@ -1026,8 +1020,7 @@ bool CanSavePage(const Browser* browser)
-           prefs::kAllowFileSelectionDialogs)) {
+   return content_restrictions;
+ }
+@@ -1371,8 +1366,7 @@ bool CanSavePage(const Browser* browser)
+       DownloadPrefs::DownloadRestriction::ALL_FILES) {
      return false;
    }
 -  return !browser->is_type_devtools() &&
@@ -38,19 +37,17 @@
  OfflinePageModel::OfflinePageModel() = default;
 --- a/content/common/url_schemes.cc
 +++ b/content/common/url_schemes.cc
-@@ -20,6 +20,10 @@ namespace content {
- namespace {
+@@ -23,13 +23,22 @@ namespace {
+ bool g_registered_url_schemes = false;
  
  const char* const kDefaultSavableSchemes[] = {
 +  url::kAboutScheme,
 +  url::kBlobScheme,
 +  url::kContentScheme,
-+  url::kGopherScheme,
    url::kHttpScheme,
    url::kHttpsScheme,
    url::kFileScheme,
-@@ -27,7 +31,13 @@ const char* const kDefaultSavableSchemes
-   url::kFtpScheme,
+   url::kFileSystemScheme,
    kChromeDevToolsScheme,
    kChromeUIScheme,
 -  url::kDataScheme
@@ -66,7 +63,7 @@
  // These lists are lazily initialized below and are leaked on shutdown to
 --- a/content/public/common/url_utils.cc
 +++ b/content/public/common/url_utils.cc
-@@ -25,11 +25,7 @@ bool HasWebUIScheme(const GURL& url) {
+@@ -27,11 +27,7 @@ bool HasWebUIScheme(const GURL& url) {
  }
  
  bool IsSavableURL(const GURL& url) {

@@ -1,8 +1,117 @@
-# Disable domain reliability component
+## Disable domain reliability component
+# Many of these changes are for thoroughness,
+# the most significant changes are in service_factory.cc and uploader.cc
 
+--- a/chrome/browser/domain_reliability/service_factory.cc
++++ b/chrome/browser/domain_reliability/service_factory.cc
+@@ -11,34 +11,12 @@
+ 
+ namespace domain_reliability {
+ 
+-namespace {
+-
+-// If Domain Reliability is enabled in the absence of a flag or field trial.
+-const bool kDefaultEnabled = true;
+-
+-// The name and value of the field trial to turn Domain Reliability on.
+-const char kFieldTrialName[] = "DomRel-Enable";
+-const char kFieldTrialValueEnable[] = "enable";
+-
+-}  // namespace
+-
+ // Identifies Chrome as the source of Domain Reliability uploads it sends.
+ const char DomainReliabilityServiceFactory::kUploadReporterString[] = "chrome";
+ 
+ // static
+ bool DomainReliabilityServiceFactory::ShouldCreateService() {
+-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+-  if (command_line->HasSwitch(switches::kDisableDomainReliability))
+-    return false;
+-  if (command_line->HasSwitch(switches::kEnableDomainReliability))
+-    return true;
+-  if (!ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled())
+-    return false;
+-  if (base::FieldTrialList::TrialExists(kFieldTrialName)) {
+-    std::string value = base::FieldTrialList::FindFullName(kFieldTrialName);
+-    return (value == kFieldTrialValueEnable);
+-  }
+-  return kDefaultEnabled;
++  return false;
+ }
+ 
+ }  // namespace domain_reliability
+--- a/components/domain_reliability/BUILD.gn
++++ b/components/domain_reliability/BUILD.gn
+@@ -7,26 +7,6 @@ action("bake_in_configs") {
+   script = "bake_in_configs.py"
+ 
+   inputs = [
+-    "baked_in_configs/c_android_clients_google_com.json",
+-    "baked_in_configs/c_bigcache_googleapis_com.json",
+-    "baked_in_configs/c_doc-0-0-sj_sj_googleusercontent_com.json",
+-    "baked_in_configs/c_docs_google_com.json",
+-    "baked_in_configs/c_drive_google_com.json",
+-    "baked_in_configs/c_googlesyndication_com.json",
+-    "baked_in_configs/c_pack_google_com.json",
+-    "baked_in_configs/c_play_google_com.json",
+-    "baked_in_configs/c_youtube_com.json",
+-    "baked_in_configs/clients2_google_com.json",
+-    "baked_in_configs/docs_google_com.json",
+-    "baked_in_configs/gcp_gvt2_com.json",
+-    "baked_in_configs/gcp_gvt6_com.json",
+-    "baked_in_configs/google-analytics_com.json",
+-    "baked_in_configs/googlevideo_com.json",
+-    "baked_in_configs/gvt1_com.json",
+-    "baked_in_configs/gvt2_com.json",
+-    "baked_in_configs/gvt6_com.json",
+-    "baked_in_configs/ssl_gstatic_com.json",
+-    "baked_in_configs/www_google_com.json",
+   ]
+ 
+   output_file = "$target_gen_dir/baked_in_configs.cc"
+@@ -34,13 +14,21 @@ action("bake_in_configs") {
+ 
+   # The JSON file list is too long for the command line on Windows, so put
+   # them in a response file.
+-  response_file_contents = rebase_path(inputs, root_build_dir)
+-  args = [
+-    "--file-list",
+-    "{{response_file_name}}",
+-    "--output",
+-    rebase_path(output_file, root_build_dir),
+-  ]
++  if (is_win) {
++      args = [
++        "--file-list",
++        "nul",
++        "--output",
++        rebase_path(output_file, root_build_dir),
++      ]
++  } else {
++        args = [
++        "--file-list",
++        "/dev/null",
++        "--output",
++        rebase_path(output_file, root_build_dir),
++      ]
++  }
+ }
+ 
+ component("domain_reliability") {
+--- a/components/domain_reliability/bake_in_configs.py
++++ b/components/domain_reliability/bake_in_configs.py
+@@ -490,7 +490,7 @@ def origin_is_whitelisted(origin):
+     domain = origin[8:-1]
+   else:
+     return False
+-  return any(domain == e or domain.endswith('.' + e)  for e in DOMAIN_WHITELIST)
++  return False
+ 
+ 
+ def quote_and_wrap_text(text, width=79, prefix='  "', suffix='"'):
 --- a/components/domain_reliability/google_configs.cc
 +++ b/components/domain_reliability/google_configs.cc
-@@ -13,575 +13,10 @@
+@@ -11,548 +11,6 @@
  
  namespace domain_reliability {
  
@@ -249,7 +358,7 @@
 -    {"l.google.com", true, true, true},
 -
 -    // google.com is a special case. We have a custom config for www.google.com,
--    // so set generate_config_for_www_subdomain = false.
+-    // so set duplicate_for_www = false.
 -    {"google.com", true, true, false},
 -
 -    // Origins with subdomains and without same-origin collectors.
@@ -293,9 +402,6 @@
 -    {"ampproject.net", true, false, false},
 -    {"ampproject.org", true, false, false},
 -    {"android.com", true, false, false},
--    {"anycast-edge.metric.gstatic.com", true, false, false},
--    {"anycast-stb.metric.gstatic.com", true, false, false},
--    {"anycast.metric.gstatic.com", true, false, false},
 -    {"cdn.ampproject.org", true, false, false},
 -    {"chromecast.com", true, false, false},
 -    {"chromeexperiments.com", true, false, false},
@@ -352,19 +458,6 @@
 -    {"picasa.com", true, false, false},
 -    {"recaptcha.net", true, false, false},
 -    {"stackdriver.com", true, false, false},
--    {"stbcast-stb.metric.gstatic.com", true, false, false},
--    {"stbcast.metric.gstatic.com", true, false, false},
--    {"stbcast2-stb.metric.gstatic.com", true, false, false},
--    {"stbcast2.metric.gstatic.com", true, false, false},
--    {"stbcast3-stb.metric.gstatic.com", true, false, false},
--    {"stbcast3.metric.gstatic.com", true, false, false},
--    {"stbcast4-stb.metric.gstatic.com", true, false, false},
--    {"stbcast4.metric.gstatic.com", true, false, false},
--    {"unicast-edge.metric.gstatic.com", true, false, false},
--    {"unicast-stb.metric.gstatic.com", true, false, false},
--    {"unicast.metric.gstatic.com", true, false, false},
--    {"unicast2-stb.metric.gstatic.com", true, false, false},
--    {"unicast2.metric.gstatic.com", true, false, false},
 -    {"waze.com", true, false, false},
 -    {"withgoogle.com", true, false, false},
 -    {"youtu.be", true, false, false},
@@ -534,7 +627,7 @@
 -const char* const kGoogleOriginSpecificCollectorPathString =
 -    "/domainreliability/upload";
 -
--static std::unique_ptr<DomainReliabilityConfig> CreateGoogleConfig(
+-std::unique_ptr<const DomainReliabilityConfig> CreateGoogleConfig(
 -    const GoogleConfigParams& params,
 -    bool is_www) {
 -  if (is_www)
@@ -543,8 +636,7 @@
 -  std::string hostname = (is_www ? "www." : "") + std::string(params.hostname);
 -  bool include_subdomains = params.include_subdomains && !is_www;
 -
--  std::unique_ptr<DomainReliabilityConfig> config(
--      new DomainReliabilityConfig());
+-  auto config = std::make_unique<DomainReliabilityConfig>();
 -  config->origin = GURL("https://" + hostname + "/");
 -  config->include_subdomains = include_subdomains;
 -  config->collectors.clear();
@@ -554,9 +646,9 @@
 -    config->collectors.push_back(
 -        std::make_unique<GURL>(config->origin.ReplaceComponents(replacements)));
 -  }
--  for (size_t i = 0; i < base::size(kGoogleStandardCollectors); i++)
--    config->collectors.push_back(
--        std::make_unique<GURL>(kGoogleStandardCollectors[i]));
+-  for (const char* collector : kGoogleStandardCollectors) {
+-    config->collectors.push_back(std::make_unique<GURL>(collector));
+-  }
 -  config->success_sample_rate = 0.05;
 -  config->failure_sample_rate = 1.00;
 -  config->path_prefixes.clear();
@@ -565,22 +657,48 @@
 -
 -}  // namespace
 -
- // static
- void GetAllGoogleConfigs(
-     std::vector<std::unique_ptr<DomainReliabilityConfig>>* configs_out) {
-   configs_out->clear();
--
--  for (auto& params : kGoogleConfigs) {
--    configs_out->push_back(CreateGoogleConfig(params, false));
--    if (params.duplicate_for_www)
--      configs_out->push_back(CreateGoogleConfig(params, true));
+ std::unique_ptr<const DomainReliabilityConfig> MaybeGetGoogleConfig(
+     const std::string& hostname) {
+   bool is_www_subdomain =
+@@ -562,23 +20,6 @@ std::unique_ptr<const DomainReliabilityC
+   std::unique_ptr<const DomainReliabilityConfig> config;
+   std::unique_ptr<const DomainReliabilityConfig> superdomain_config;
+ 
+-  for (const auto& params : kGoogleConfigs) {
+-    if (params.hostname == hostname) {
+-      config = CreateGoogleConfig(params, false);
+-      break;
+-    }
+-    if (params.duplicate_for_www && is_www_subdomain &&
+-        params.hostname == hostname_parent) {
+-      config = CreateGoogleConfig(params, true);
+-      break;
+-    }
+-    // Don't break out of the loop upon finding a superdomain config, because
+-    // there might be an exact match later on.
+-    if (params.include_subdomains && params.hostname == hostname_parent) {
+-      superdomain_config = CreateGoogleConfig(params, false);
+-    }
 -  }
+-
+   if (config) {
+     DCHECK(config->origin.host() == hostname);
+     return config;
+@@ -597,11 +38,6 @@ std::vector<std::unique_ptr<const Domain
+ GetAllGoogleConfigsForTesting() {
+   std::vector<std::unique_ptr<const DomainReliabilityConfig>> configs_out;
+ 
+-  for (const auto& params : kGoogleConfigs) {
+-    configs_out.push_back(CreateGoogleConfig(params, false));
+-    if (params.duplicate_for_www)
+-      configs_out.push_back(CreateGoogleConfig(params, true));
+-  }
+   return configs_out;
  }
  
- }  // namespace domain_reliability
 --- a/components/domain_reliability/uploader.cc
 +++ b/components/domain_reliability/uploader.cc
-@@ -82,7 +82,7 @@ class DomainReliabilityUploaderImpl
+@@ -80,7 +80,7 @@ class DomainReliabilityUploaderImpl : pu
      if (discard_uploads_)
        discarded_upload_count_++;
  
@@ -589,72 +707,3 @@
        DVLOG(1) << "Discarding report instead of uploading.";
        UploadResult result;
        result.status = UploadResult::SUCCESS;
---- a/components/domain_reliability/bake_in_configs.py
-+++ b/components/domain_reliability/bake_in_configs.py
-@@ -490,7 +490,7 @@ def origin_is_whitelisted(origin):
-     domain = origin[8:-1]
-   else:
-     return False
--  return any(domain == e or domain.endswith('.' + e)  for e in DOMAIN_WHITELIST)
-+  return False
- 
- 
- def quote_and_wrap_text(text, width=79, prefix='  "', suffix='"'):
---- a/components/domain_reliability/BUILD.gn
-+++ b/components/domain_reliability/BUILD.gn
-@@ -10,26 +10,6 @@ action("bake_in_configs") {
-   script = "bake_in_configs.py"
- 
-   inputs = [
--    "baked_in_configs/c_android_clients_google_com.json",
--    "baked_in_configs/c_bigcache_googleapis_com.json",
--    "baked_in_configs/c_doc-0-0-sj_sj_googleusercontent_com.json",
--    "baked_in_configs/c_docs_google_com.json",
--    "baked_in_configs/c_drive_google_com.json",
--    "baked_in_configs/c_googlesyndication_com.json",
--    "baked_in_configs/c_pack_google_com.json",
--    "baked_in_configs/c_play_google_com.json",
--    "baked_in_configs/c_youtube_com.json",
--    "baked_in_configs/clients2_google_com.json",
--    "baked_in_configs/docs_google_com.json",
--    "baked_in_configs/gcp_gvt2_com.json",
--    "baked_in_configs/gcp_gvt6_com.json",
--    "baked_in_configs/google-analytics_com.json",
--    "baked_in_configs/googlevideo_com.json",
--    "baked_in_configs/gvt1_com.json",
--    "baked_in_configs/gvt2_com.json",
--    "baked_in_configs/gvt6_com.json",
--    "baked_in_configs/ssl_gstatic_com.json",
--    "baked_in_configs/www_google_com.json",
-   ]
- 
-   output_file = "$target_gen_dir/baked_in_configs.cc"
-@@ -39,13 +19,21 @@ action("bake_in_configs") {
- 
-   # The JSON file list is too long for the command line on Windows, so put
-   # them in a response file.
--  response_file_contents = rebase_path(inputs, root_build_dir)
--  args = [
--    "--file-list",
--    "{{response_file_name}}",
--    "--output",
--    rebase_path(output_file, root_build_dir),
--  ]
-+  if (is_win) {
-+      args = [
-+        "--file-list",
-+        "nul",
-+        "--output",
-+        rebase_path(output_file, root_build_dir),
-+      ]
-+  } else {
-+        args = [
-+        "--file-list",
-+        "/dev/null",
-+        "--output",
-+        rebase_path(output_file, root_build_dir),
-+      ]
-+  }
- }
- 
- jumbo_component("domain_reliability") {

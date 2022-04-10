@@ -5,20 +5,22 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """
-Module for the downloading, checking, and unpacking of necessary files into the source tree
+Module for the downloading, checking, and unpacking of necessary files into the source tree.
 """
 
 import argparse
 import configparser
 import enum
 import hashlib
+import shutil
+import subprocess
 import sys
 import urllib.request
 from pathlib import Path
 
-from _common import ENCODING, SEVENZIP_USE_REGISTRY, ExtractorEnum, get_logger, \
+from _common import ENCODING, USE_REGISTRY, ExtractorEnum, get_logger, \
     get_chromium_version, add_common_params
-from _extraction import extract_tar_file, extract_with_7z
+from _extraction import extract_tar_file, extract_with_7z, extract_with_winrar
 
 sys.path.insert(0, str(Path(__file__).parent / 'third_party'))
 import schema #pylint: disable=wrong-import-position
@@ -63,7 +65,8 @@ class DownloadInfo: #pylint: disable=too-few-public-methods
             'output_path': (lambda x: str(Path(x).relative_to(''))),
             **{schema.Optional(x): schema.And(str, len)
                for x in _optional_keys},
-            schema.Optional('extractor'): schema.Or(ExtractorEnum.TAR, ExtractorEnum.SEVENZIP),
+            schema.Optional('extractor'): schema.Or(ExtractorEnum.TAR, ExtractorEnum.SEVENZIP,
+                                                    ExtractorEnum.WINRAR),
             schema.Optional(schema.Or(*_hashes)): schema.And(str, len),
             schema.Optional('hash_url'): lambda x: DownloadInfo._is_hash_url(x), #pylint: disable=unnecessary-lambda
         }
@@ -85,7 +88,7 @@ class DownloadInfo: #pylint: disable=too-few-public-methods
             if name in self._passthrough_properties:
                 return self._section_dict.get(name, fallback=None)
             if name == 'hashes':
-                hashes_dict = dict()
+                hashes_dict = {}
                 for hash_name in (*self._hashes, 'hash_url'):
                     value = self._section_dict.get(hash_name, fallback=None)
                     if value:
@@ -179,7 +182,26 @@ class _UrlRetrieveReportHook: #pylint: disable=too-few-public-methods
         print('\r' + status_line, end='')
 
 
-def _download_if_needed(file_path, url, show_progress):
+def _download_via_urllib(url, file_path, show_progress, disable_ssl_verification):
+    reporthook = None
+    if show_progress:
+        reporthook = _UrlRetrieveReportHook()
+    if disable_ssl_verification:
+        import ssl
+        # TODO: Remove this or properly implement disabling SSL certificate verification
+        orig_https_context = ssl._create_default_https_context #pylint: disable=protected-access
+        ssl._create_default_https_context = ssl._create_unverified_context #pylint: disable=protected-access
+    try:
+        urllib.request.urlretrieve(url, str(file_path), reporthook=reporthook)
+    finally:
+        # Try to reduce damage of hack by reverting original HTTPS context ASAP
+        if disable_ssl_verification:
+            ssl._create_default_https_context = orig_https_context #pylint: disable=protected-access
+    if show_progress:
+        print()
+
+
+def _download_if_needed(file_path, url, show_progress, disable_ssl_verification):
     """
     Downloads a file from url to the specified path file_path if necessary.
 
@@ -187,14 +209,30 @@ def _download_if_needed(file_path, url, show_progress):
     """
     if file_path.exists():
         get_logger().info('%s already exists. Skipping download.', file_path)
+        return
+
+    # File name for partially download file
+    tmp_file_path = file_path.with_name(file_path.name + '.partial')
+
+    if tmp_file_path.exists():
+        get_logger().debug('Resuming downloading URL %s ...', url)
     else:
-        get_logger().info('Downloading %s ...', file_path)
-        reporthook = None
-        if show_progress:
-            reporthook = _UrlRetrieveReportHook()
-        urllib.request.urlretrieve(url, str(file_path), reporthook=reporthook)
-        if show_progress:
-            print()
+        get_logger().debug('Downloading URL %s ...', url)
+
+    # Perform download
+    if shutil.which('curl'):
+        get_logger().debug('Using curl')
+        try:
+            subprocess.run(['curl', '-L', '-o', str(tmp_file_path), '-C', '-', url], check=True)
+        except subprocess.CalledProcessError as exc:
+            get_logger().error('curl failed. Re-run the download command to resume downloading.')
+            raise exc
+    else:
+        get_logger().debug('Using urllib')
+        _download_via_urllib(url, tmp_file_path, show_progress, disable_ssl_verification)
+
+    # Download complete; rename file
+    tmp_file_path.rename(file_path)
 
 
 def _chromium_hashes_generator(hashes_path):
@@ -237,25 +275,17 @@ def retrieve_downloads(download_info, cache_dir, show_progress, disable_ssl_veri
         raise FileNotFoundError(cache_dir)
     if not cache_dir.is_dir():
         raise NotADirectoryError(cache_dir)
-    if disable_ssl_verification:
-        import ssl
-        # TODO: Remove this or properly implement disabling SSL certificate verification
-        orig_https_context = ssl._create_default_https_context #pylint: disable=protected-access
-        ssl._create_default_https_context = ssl._create_unverified_context #pylint: disable=protected-access
-    try:
-        for download_name, download_properties in download_info.properties_iter():
-            get_logger().info('Downloading "%s" to "%s" ...', download_name,
-                              download_properties.download_filename)
-            download_path = cache_dir / download_properties.download_filename
-            _download_if_needed(download_path, download_properties.url, show_progress)
-            if download_properties.has_hash_url():
-                get_logger().info('Downloading hashes for "%s"', download_name)
-                _, hash_filename, hash_url = download_properties.hashes['hash_url']
-                _download_if_needed(cache_dir / hash_filename, hash_url, show_progress)
-    finally:
-        # Try to reduce damage of hack by reverting original HTTPS context ASAP
-        if disable_ssl_verification:
-            ssl._create_default_https_context = orig_https_context #pylint: disable=protected-access
+    for download_name, download_properties in download_info.properties_iter():
+        get_logger().info('Downloading "%s" to "%s" ...', download_name,
+                          download_properties.download_filename)
+        download_path = cache_dir / download_properties.download_filename
+        _download_if_needed(download_path, download_properties.url, show_progress,
+                            disable_ssl_verification)
+        if download_properties.has_hash_url():
+            get_logger().info('Downloading hashes for "%s"', download_name)
+            _, hash_filename, hash_url = download_properties.hashes['hash_url']
+            _download_if_needed(cache_dir / hash_filename, hash_url, show_progress,
+                                disable_ssl_verification)
 
 
 def check_downloads(download_info, cache_dir):
@@ -287,7 +317,7 @@ def unpack_downloads(download_info, cache_dir, output_dir, extractors=None):
     cache_dir is the pathlib.Path directory containing the download cache
     output_dir is the pathlib.Path directory to unpack the downloads to.
     extractors is a dictionary of PlatformEnum to a command or path to the
-        extractor binary. Defaults to 'tar' for tar, and '_use_registry' for 7-Zip.
+        extractor binary. Defaults to 'tar' for tar, and '_use_registry' for 7-Zip and WinRAR.
 
     May raise undetermined exceptions during archive unpacking.
     """
@@ -298,6 +328,8 @@ def unpack_downloads(download_info, cache_dir, output_dir, extractors=None):
         extractor_name = download_properties.extractor or ExtractorEnum.TAR
         if extractor_name == ExtractorEnum.SEVENZIP:
             extractor_func = extract_with_7z
+        elif extractor_name == ExtractorEnum.WINRAR:
+            extractor_func = extract_with_winrar
         elif extractor_name == ExtractorEnum.TAR:
             extractor_func = extract_tar_file
         else:
@@ -333,12 +365,13 @@ def _retrieve_callback(args):
         check_downloads(DownloadInfo(args.ini), args.cache)
     except HashMismatchError as exc:
         get_logger().error('File checksum does not match: %s', exc)
-        exit(1)
+        sys.exit(1)
 
 
 def _unpack_callback(args):
     extractors = {
         ExtractorEnum.SEVENZIP: args.sevenz_path,
+        ExtractorEnum.WINRAR: args.winrar_path,
         ExtractorEnum.TAR: args.tar_path,
     }
     unpack_downloads(DownloadInfo(args.ini), args.cache, args.output, extractors)
@@ -346,7 +379,7 @@ def _unpack_callback(args):
 
 def main():
     """CLI Entrypoint"""
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description=__doc__)
     add_common_params(parser)
     subparsers = parser.add_subparsers(title='Download actions', dest='action')
 
@@ -354,7 +387,10 @@ def main():
     retrieve_parser = subparsers.add_parser(
         'retrieve',
         help='Retrieve and check download files',
-        description='Retrieves and checks downloads without unpacking.')
+        description=('Retrieves and checks downloads without unpacking. '
+                     'The downloader will attempt to use CLI command "curl". '
+                     'If it is not present, Python\'s urllib will be used. However, only '
+                     'the CLI-based downloaders can be resumed if the download is aborted.'))
     _add_common_args(retrieve_parser)
     retrieve_parser.add_argument(
         '--hide-progress-bar',
@@ -381,8 +417,14 @@ def main():
     unpack_parser.add_argument(
         '--7z-path',
         dest='sevenz_path',
-        default=SEVENZIP_USE_REGISTRY,
+        default=USE_REGISTRY,
         help=('Command or path to 7-Zip\'s "7z" binary. If "_use_registry" is '
+              'specified, determine the path from the registry. Default: %(default)s'))
+    unpack_parser.add_argument(
+        '--winrar-path',
+        dest='winrar_path',
+        default=USE_REGISTRY,
+        help=('Command or path to WinRAR\'s "winrar" binary. If "_use_registry" is '
               'specified, determine the path from the registry. Default: %(default)s'))
     unpack_parser.add_argument('output', type=Path, help='The directory to unpack to.')
     unpack_parser.set_defaults(callback=_unpack_callback)

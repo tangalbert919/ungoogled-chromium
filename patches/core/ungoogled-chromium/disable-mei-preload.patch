@@ -7,16 +7,16 @@
 
 --- a/chrome/BUILD.gn
 +++ b/chrome/BUILD.gn
-@@ -337,7 +337,6 @@ if (!is_android && !is_mac) {
+@@ -347,7 +347,6 @@ if (!is_android && !is_mac) {
      }
  
      data_deps += [
 -      "//chrome/browser/resources/media/mei_preload:component",
        "//third_party/widevine/cdm",
      ]
- 
-@@ -1206,7 +1205,6 @@ if (is_win) {
-       ":packed_resources",
+   }
+@@ -1189,7 +1188,6 @@ if (is_win) {
+       ":optimization_guide_library",
        ":swiftshader_library",
        ":widevine_cdm_library",
 -      "//chrome/browser/resources/media/mei_preload:component_bundle",

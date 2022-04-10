@@ -1,6 +1,6 @@
 --- a/components/autofill/core/browser/autofill_download_manager.cc
 +++ b/components/autofill/core/browser/autofill_download_manager.cc
-@@ -829,86 +829,6 @@ AutofillDownloadManager::GetRequestURLAn
+@@ -803,94 +803,6 @@ std::tuple<GURL, std::string> AutofillDo
  }
  
  bool AutofillDownloadManager::StartRequest(FormRequestData request_data) {
@@ -9,11 +9,7 @@
 -  DCHECK(url_loader_factory);
 -
 -  // Get the URL and method to use for this request.
--  std::string method;
--  GURL request_url;
--  std::tie(request_url, method) =
--      UseApi() ? GetRequestURLAndMethodForApi(request_data)
--               : GetRequestURLAndMethod(request_data);
+-  auto [request_url, method] = GetRequestURLAndMethod(request_data);
 -
 -  // Track the URL length for GET queries because the URL length can be in the
 -  // thousands when rich metadata is enabled.
@@ -28,6 +24,23 @@
 -  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 -  resource_request->method = method;
 -
+-  // On iOS we have a single, shared URLLoaderFactory provided by BrowserState.
+-  // As it is shared, it is not trusted and we cannot assign trusted_params
+-  // to the network request.
+-#if !BUILDFLAG(IS_IOS)
+-  // Do not call IsolationInfo() for REQUEST_UPLOADs because Password Manager
+-  // uploads when RenderFrameHostImpl::DidCommitNavigation() is called, in which
+-  // case IsolationInfo() may crash because there is no committing
+-  // NavigationRequest. This is safe because no information about the response
+-  // is passed to the renderer, or is otherwise visible to a page.
+-  // crbug/1176635#c22
+-  if (request_data.request_type != AutofillDownloadManager::REQUEST_UPLOAD) {
+-    resource_request->trusted_params =
+-        network::ResourceRequest::TrustedParams();
+-    resource_request->trusted_params->isolation_info = driver_->IsolationInfo();
+-  }
+-#endif
+-
 -  // Add Chrome experiment state to the request headers.
 -  variations::AppendVariationsHeaderUnknownSignedIn(
 -      request_url,
@@ -35,11 +48,10 @@
 -                             : variations::InIncognito::kNo,
 -      resource_request.get());
 -
--  // Set headers specific to the API if using it.
--  if (UseApi())
--    // Encode response serialized proto in base64 for safety.
--    resource_request->headers.SetHeader(kGoogEncodeResponseIfExecutable,
--                                        "base64");
+-  // Set headers specific to the API.
+-  // Encode response serialized proto in base64 for safety.
+-  resource_request->headers.SetHeader(kGoogEncodeResponseIfExecutable,
+-                                      "base64");
 -
 -  // Put API key in request's header if a key exists, and the endpoint is
 -  // trusted by Google.
@@ -58,17 +70,13 @@
 -  simple_loader->SetAllowHttpErrorResults(true);
 -
 -  if (method == "POST") {
--    const std::string content_type =
--        UseApi() ? "application/x-protobuf" : "text/proto";
+-    const std::string content_type = "application/x-protobuf";
 -    std::string payload;
--    if (UseApi()) {
--      if (!GetAPIBodyPayload(request_data.payload, request_data.request_type,
--                             &payload)) {
--        return false;
--      }
--    } else {
--      payload = request_data.payload;
+-    if (!GetAPIBodyPayload(request_data.payload, request_data.request_type,
+-                           &payload)) {
+-      return false;
 -    }
+-
 -    // Attach payload data and add data format header.
 -    simple_loader->AttachStringForUpload(payload, content_type);
 -  }

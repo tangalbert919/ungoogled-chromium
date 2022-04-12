@@ -130,7 +130,7 @@
  #endif
 --- a/components/google/core/common/google_util.cc
 +++ b/components/google/core/common/google_util.cc
-@@ -32,112 +32,6 @@ namespace google_util {
+@@ -31,112 +31,6 @@ namespace google_util {
  
  namespace {
  
@@ -243,7 +243,7 @@
  }  // namespace
  
  // Global functions -----------------------------------------------------------
-@@ -145,12 +39,6 @@ bool IsGoogleSearchSubdomainUrl(const GU
+@@ -144,12 +38,6 @@ bool IsGoogleSearchSubdomainUrl(const GU
  const char kGoogleHomepageURL[] = "trk:113:https://www.google.com/";
  
  bool HasGoogleSearchQueryParam(base::StringPiece str) {
@@ -256,7 +256,7 @@
    return false;
  }
  
-@@ -161,161 +49,53 @@ std::string GetGoogleLocale(const std::s
+@@ -160,11 +48,11 @@ std::string GetGoogleLocale(const std::s
  
  GURL AppendGoogleLocaleParam(const GURL& url,
                               const std::string& application_locale) {
@@ -266,53 +266,42 @@
  }
  
  std::string GetGoogleCountryCode(const GURL& google_homepage_url) {
--  base::StringPiece google_hostname = google_homepage_url.host_piece();
--  // TODO(igorcov): This needs a fix for case when the host has a trailing dot,
--  // like "google.com./". https://crbug.com/720295.
--  const size_t last_dot = google_hostname.find_last_of('.');
--  if (last_dot == std::string::npos)
--    return std::string();
--  base::StringPiece country_code = google_hostname.substr(last_dot + 1);
--  // Assume the com TLD implies the US.
--  if (country_code == "com")
--    return "us";
--  // Google uses the Unicode Common Locale Data Repository (CLDR), and the CLDR
--  // code for the UK is "gb".
--  if (country_code == "uk")
--    return "gb";
--  // Catalonia does not have a CLDR country code, since it's a region in Spain,
--  // so use Spain instead.
--  if (country_code == "cat")
--    return "es";
++#if 0
+   base::StringPiece google_hostname = google_homepage_url.host_piece();
+   // TODO(igorcov): This needs a fix for case when the host has a trailing dot,
+   // like "google.com./". https://crbug.com/720295.
+@@ -183,19 +71,23 @@ std::string GetGoogleCountryCode(const G
+   // so use Spain instead.
+   if (country_code == "cat")
+     return "es";
 -  return std::string(country_code);
++#endif
 +  return "nolocale";
  }
  
  GURL GetGoogleSearchURL(const GURL& google_homepage_url) {
--  // To transform the homepage URL into the corresponding search URL, add the
--  // "search" and the "q=" query string.
--  GURL::Replacements replacements;
--  replacements.SetPathStr("search");
--  replacements.SetQueryStr("q=");
++#if 0
+   // To transform the homepage URL into the corresponding search URL, add the
+   // "search" and the "q=" query string.
+   GURL::Replacements replacements;
+   replacements.SetPathStr("search");
+   replacements.SetQueryStr("q=");
 -  return google_homepage_url.ReplaceComponents(replacements);
++#endif
 +  return google_homepage_url;
  }
  
  const GURL& CommandLineGoogleBaseURL() {
--  // Unit tests may add command-line flags after the first call to this
--  // function, so we don't simply initialize a static |base_url| directly and
--  // then unconditionally return it.
--  static base::NoDestructor<std::string> switch_value;
-   static base::NoDestructor<GURL> base_url;
--  std::string current_switch_value(
--      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
--          switches::kGoogleBaseURL));
--  if (current_switch_value != *switch_value) {
--    *switch_value = current_switch_value;
--    *base_url = url_formatter::FixupURL(*switch_value, std::string());
--    if (!base_url->is_valid() || base_url->has_query() || base_url->has_ref())
--      *base_url = GURL();
--  }
++#if 0
+   // Unit tests may add command-line flags after the first call to this
+   // function, so we don't simply initialize a static |base_url| directly and
+   // then unconditionally return it.
+@@ -210,31 +102,29 @@ const GURL& CommandLineGoogleBaseURL() {
+     if (!base_url->is_valid() || base_url->has_query() || base_url->has_ref())
+       *base_url = GURL();
+   }
++#endif
++  static base::NoDestructor<GURL> base_url;
 +  *base_url = GURL();
    return *base_url;
  }
@@ -342,38 +331,32 @@
  }
  
  bool IsGoogleHomePageUrl(const GURL& url) {
--  // First check to see if this has a Google domain.
--  if (!IsGoogleDomainUrl(url, DISALLOW_SUBDOMAIN,
--                         DISALLOW_NON_STANDARD_PORTS) &&
--      !IsGoogleSearchSubdomainUrl(url)) {
--    return false;
--  }
--
--  // Make sure the path is a known home page path.
--  base::StringPiece path(url.path_piece());
++#if 0
+   // First check to see if this has a Google domain.
+   if (!IsGoogleDomainUrl(url, DISALLOW_SUBDOMAIN,
+                          DISALLOW_NON_STANDARD_PORTS) &&
+@@ -244,11 +134,12 @@ bool IsGoogleHomePageUrl(const GURL& url
+ 
+   // Make sure the path is a known home page path.
+   base::StringPiece path(url.path_piece());
 -  return IsPathHomePageBase(path) ||
 -         base::StartsWith(path, "/ig", base::CompareCase::INSENSITIVE_ASCII);
++#endif
 +  return false;
  }
  
  bool IsGoogleSearchUrl(const GURL& url) {
--  // First check to see if this has a Google domain.
--  if (!IsGoogleDomainUrl(url, DISALLOW_SUBDOMAIN,
--                         DISALLOW_NON_STANDARD_PORTS) &&
--      !IsGoogleSearchSubdomainUrl(url)) {
--    return false;
--  }
--
--  // Make sure the path is a known search path.
--  base::StringPiece path(url.path_piece());
--  bool is_home_page_base = IsPathHomePageBase(path);
--  if (!is_home_page_base && path != "/search" && path != "/imgres")
--    return false;
--
--  // Check for query parameter in URL parameter and hash fragment, depending on
--  // the path type.
++#if 0
+   // First check to see if this has a Google domain.
+   if (!IsGoogleDomainUrl(url, DISALLOW_SUBDOMAIN,
+                          DISALLOW_NON_STANDARD_PORTS) &&
+@@ -264,18 +155,18 @@ bool IsGoogleSearchUrl(const GURL& url)
+ 
+   // Check for query parameter in URL parameter and hash fragment, depending on
+   // the path type.
 -  return HasGoogleSearchQueryParam(url.ref_piece()) ||
 -         (!is_home_page_base && HasGoogleSearchQueryParam(url.query_piece()));
++#endif
 +  return false;
  }
  
@@ -386,45 +369,16 @@
  }
  
  bool IsGoogleAssociatedDomainUrl(const GURL& url) {
--  if (IsGoogleDomainUrl(url, ALLOW_SUBDOMAIN, ALLOW_NON_STANDARD_PORTS))
--    return true;
++#if 0
+   if (IsGoogleDomainUrl(url, ALLOW_SUBDOMAIN, ALLOW_NON_STANDARD_PORTS))
+     return true;
+ 
+@@ -314,7 +205,7 @@ bool IsGoogleAssociatedDomainUrl(const G
+     if (base::LowerCaseEqualsASCII(host, kHostsToSetHeadersFor[i]))
+       return true;
+   }
 -
--  if (IsYoutubeDomainUrl(url, ALLOW_SUBDOMAIN, ALLOW_NON_STANDARD_PORTS))
--    return true;
--
--  // Some domains don't have international TLD extensions, so testing for them
--  // is very straightforward.
--  static const char* kSuffixesToSetHeadersFor[] = {
--      ".android.com",
--      ".doubleclick.com",
--      ".doubleclick.net",
--      ".ggpht.com",
--      ".googleadservices.com",
--      ".googleapis.com",
--      ".googlesyndication.com",
--      ".googleusercontent.com",
--      ".googlevideo.com",
--      ".gstatic.com",
--      ".litepages.googlezip.net",
--      ".ytimg.com",
--  };
--  const std::string host = url.host();
--  for (size_t i = 0; i < base::size(kSuffixesToSetHeadersFor); ++i) {
--    if (base::EndsWith(host, kSuffixesToSetHeadersFor[i],
--                       base::CompareCase::INSENSITIVE_ASCII)) {
--      return true;
--    }
--  }
--
--  // Exact hostnames in lowercase to set headers for.
--  static const char* kHostsToSetHeadersFor[] = {
--      "googleweblight.com",
--  };
--  for (size_t i = 0; i < base::size(kHostsToSetHeadersFor); ++i) {
--    if (base::LowerCaseEqualsASCII(host, kHostsToSetHeadersFor[i]))
--      return true;
--  }
--
++#endif
    return false;
  }
  
@@ -485,7 +439,7 @@
  bool IsGoogleHostname(const GURL& url) {
 --- a/components/search_engines/template_url.cc
 +++ b/components/search_engines/template_url.cc
-@@ -530,11 +530,7 @@ std::u16string TemplateURLRef::SearchTer
+@@ -532,11 +532,7 @@ std::u16string TemplateURLRef::SearchTer
  bool TemplateURLRef::HasGoogleBaseURLs(
      const SearchTermsData& search_terms_data) const {
    ParseIfNecessary(search_terms_data);

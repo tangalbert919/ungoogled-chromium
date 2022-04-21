@@ -198,6 +198,33 @@
    return attributes;
  }
  
+--- a/chrome/browser/download/bubble/download_bubble_prefs.cc
++++ b/chrome/browser/download/bubble/download_bubble_prefs.cc
+@@ -6,14 +6,11 @@
+ 
+ #include "base/feature_list.h"
+ #include "chrome/browser/enterprise/connectors/connectors_service.h"
+-#include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
+-#include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
+-#include "components/safe_browsing/core/common/features.h"
+-#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+ 
+ namespace download {
+ 
+ bool IsDownloadBubbleEnabled(Profile* profile) {
++#if 0
+   if (!base::FeatureList::IsEnabled(safe_browsing::kDownloadBubble)) {
+     return false;
+   }
+@@ -32,7 +29,7 @@ bool IsDownloadBubbleEnabled(Profile* pr
+       advanced_protection_manager->IsUnderAdvancedProtection()) {
+     return false;
+   }
+-
++#endif
+   auto* connector_service =
+       enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
+           profile);
 --- a/chrome/browser/download/chrome_download_manager_delegate.cc
 +++ b/chrome/browser/download/chrome_download_manager_delegate.cc
 @@ -130,7 +130,6 @@ using content::DownloadManager;
@@ -695,7 +722,7 @@
    auto* telemetry_service =
        safe_browsing::ExtensionTelemetryServiceFactory::GetForProfile(
            Profile::FromBrowserContext(context));
-@@ -622,6 +623,7 @@ void ChromeExtensionsBrowserClient::Noti
+@@ -622,20 +623,17 @@ void ChromeExtensionsBrowserClient::Noti
    auto signal = std::make_unique<safe_browsing::TabsExecuteScriptSignal>(
        extension_id, code);
    telemetry_service->AddSignal(std::move(signal));
@@ -703,6 +730,38 @@
  }
  
  bool ChromeExtensionsBrowserClient::IsExtensionTelemetryServiceEnabled(
+     content::BrowserContext* context) const {
+-  auto* telemetry_service =
+-      safe_browsing::ExtensionTelemetryServiceFactory::GetForProfile(
+-          Profile::FromBrowserContext(context));
+-  return telemetry_service && telemetry_service->enabled();
++  return false;
+ }
+ 
+ bool ChromeExtensionsBrowserClient::
+     IsExtensionTelemetryRemoteHostContactedSignalEnabled() const {
+-  return base::FeatureList::IsEnabled(
+-      safe_browsing::kExtensionTelemetryReportContactedHosts);
++  return false;
+ }
+ 
+ void ChromeExtensionsBrowserClient::NotifyExtensionRemoteHostContacted(
+@@ -645,6 +643,7 @@ void ChromeExtensionsBrowserClient::Noti
+   if (!url.SchemeIsHTTPOrHTTPS()) {
+     return;
+   }
++#if 0
+   auto* telemetry_service =
+       safe_browsing::ExtensionTelemetryServiceFactory::GetForProfile(
+           Profile::FromBrowserContext(context));
+@@ -655,6 +654,7 @@ void ChromeExtensionsBrowserClient::Noti
+       std::make_unique<safe_browsing::RemoteHostContactedSignal>(extension_id,
+                                                                  url);
+   telemetry_service->AddSignal(std::move(remote_host_signal));
++#endif
+ }
+ 
+ // static
 --- a/chrome/browser/extensions/extension_service.cc
 +++ b/chrome/browser/extensions/extension_service.cc
 @@ -52,7 +52,6 @@
@@ -901,6 +960,16 @@
  }
  
  bool ExtensionSystemImpl::FinishDelayedInstallationIfReady(
+--- a/chrome/browser/extensions/installed_loader.cc
++++ b/chrome/browser/extensions/installed_loader.cc
+@@ -28,7 +28,6 @@
+ #include "chrome/common/extensions/chrome_manifest_url_handlers.h"
+ #include "chrome/common/extensions/manifest_handlers/settings_overrides_handler.h"
+ #include "chrome/common/webui_url_constants.h"
+-#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+ #include "content/public/browser/browser_thread.h"
+ #include "content/public/browser/notification_service.h"
+ #include "content/public/common/url_constants.h"
 --- a/chrome/browser/extensions/safe_browsing_verdict_handler.cc
 +++ b/chrome/browser/extensions/safe_browsing_verdict_handler.cc
 @@ -119,7 +119,6 @@ void SafeBrowsingVerdictHandler::UpdateB

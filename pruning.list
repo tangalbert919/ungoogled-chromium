@@ -73,7 +73,7 @@ chrome/browser/resources/chromeos/accessibility/select_to_speak/earcons/null_sel
 chrome/browser/resources/media/mei_preload/preloaded_data.pb
 chrome/browser/ui/app_list/search/search_result_ranker/20190722_example_preprocessor_config.pb
 chrome/browser/ui/app_list/search/search_result_ranker/search_ranker_assets/20190923_example_preprocessor_config.pb
-chrome/build/pgo_profiles/chrome-linux-4951-1649181099-528ef6669805f2d3db6f3ad7429cfa57a6078271.profdata
+chrome/build/pgo_profiles/chrome-linux-4951-1650389737-545882ae3e5c9e7f75e0781c8dc0d1eafb667efd.profdata
 chrome/chrome_cleaner/parsers/shortcut_parser/target/data/lnk_parser_fuzzer/Network Share Test.lnk
 chrome/chrome_cleaner/parsers/shortcut_parser/target/data/lnk_parser_fuzzer/New folder - Shortcut.lnk
 chrome/chrome_cleaner/parsers/shortcut_parser/target/data/lnk_parser_fuzzer/long_name.lnk
@@ -3004,6 +3004,38 @@ third_party/angle/third_party/glmark2/src/data/models/cat.3ds
 third_party/angle/third_party/glmark2/src/data/models/cube.3ds
 third_party/angle/third_party/glmark2/src/data/models/horse.3ds
 third_party/angle/third_party/r8/custom_d8.jar
+third_party/apache-linux/bin/httpd
+third_party/apache-linux/bin/openssl
+third_party/apache-linux/lib/libapr-1.so.0
+third_party/apache-linux/lib/libaprutil-1.so.0
+third_party/apache-linux/lib/libcrypt.so.2
+third_party/apache-linux/lib/libcrypto.so.1.1
+third_party/apache-linux/lib/libexpat.so.1
+third_party/apache-linux/lib/libpcre.so.1
+third_party/apache-linux/lib/libpcrecpp.so.0
+third_party/apache-linux/lib/libpcreposix.so.0
+third_party/apache-linux/lib/libssl.so.1.1
+third_party/apache-linux/lib/libxml2.so.2
+third_party/apache-linux/lib/libz.so.1
+third_party/apache-linux/libexec/apache2/libphp7.so
+third_party/apache-linux/libexec/apache2/mod_access_compat.so
+third_party/apache-linux/libexec/apache2/mod_actions.so
+third_party/apache-linux/libexec/apache2/mod_alias.so
+third_party/apache-linux/libexec/apache2/mod_asis.so
+third_party/apache-linux/libexec/apache2/mod_authz_core.so
+third_party/apache-linux/libexec/apache2/mod_authz_host.so
+third_party/apache-linux/libexec/apache2/mod_autoindex.so
+third_party/apache-linux/libexec/apache2/mod_cgi.so
+third_party/apache-linux/libexec/apache2/mod_env.so
+third_party/apache-linux/libexec/apache2/mod_headers.so
+third_party/apache-linux/libexec/apache2/mod_imagemap.so
+third_party/apache-linux/libexec/apache2/mod_include.so
+third_party/apache-linux/libexec/apache2/mod_log_config.so
+third_party/apache-linux/libexec/apache2/mod_mime.so
+third_party/apache-linux/libexec/apache2/mod_negotiation.so
+third_party/apache-linux/libexec/apache2/mod_rewrite.so
+third_party/apache-linux/libexec/apache2/mod_ssl.so
+third_party/apache-linux/libexec/apache2/mod_unixd.so
 third_party/blink/manual_tests/WebKitSite.webarchive
 third_party/blink/manual_tests/accessibility/resources/AppletTest.class
 third_party/blink/manual_tests/plugins/test.swf

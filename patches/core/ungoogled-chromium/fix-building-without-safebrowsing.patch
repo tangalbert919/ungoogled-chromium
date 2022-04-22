@@ -2,7 +2,7 @@
 
 --- a/chrome/browser/BUILD.gn
 +++ b/chrome/browser/BUILD.gn
-@@ -1947,7 +1947,6 @@ static_library("browser") {
+@@ -1949,7 +1949,6 @@ static_library("browser") {
      "//chrome/browser/net:probe_message_proto",
      "//chrome/browser/new_tab_page/modules/drive:mojo_bindings",
      "//chrome/browser/new_tab_page/modules/photos:mojo_bindings",
@@ -10,7 +10,7 @@
      "//chrome/browser/new_tab_page/modules/task_module:mojo_bindings",
      "//chrome/browser/notifications",
      "//chrome/browser/notifications/scheduler:factory",
-@@ -3742,9 +3741,6 @@ static_library("browser") {
+@@ -3746,9 +3745,6 @@ static_library("browser") {
        "download/offline_item_model_manager_factory.h",
        "enterprise/connectors/analysis/analysis_service_settings.cc",
        "enterprise/connectors/analysis/analysis_service_settings.h",
@@ -20,7 +20,7 @@
        "enterprise/connectors/analysis/content_analysis_dialog.cc",
        "enterprise/connectors/analysis/content_analysis_dialog.h",
        "enterprise/connectors/analysis/content_analysis_downloads_delegate.cc",
-@@ -3991,10 +3987,6 @@ static_library("browser") {
+@@ -3995,10 +3991,6 @@ static_library("browser") {
        "new_tab_page/modules/photos/photos_service.h",
        "new_tab_page/modules/photos/photos_service_factory.cc",
        "new_tab_page/modules/photos/photos_service_factory.h",
@@ -31,7 +31,7 @@
        "new_tab_page/modules/task_module/task_module_handler.cc",
        "new_tab_page/modules/task_module/task_module_handler.h",
        "new_tab_page/modules/task_module/task_module_service.cc",
-@@ -7315,9 +7307,14 @@ static_library("browser") {
+@@ -7325,9 +7317,14 @@ static_library("browser") {
        "//components/safe_browsing/content/browser:safe_browsing_blocking_page",
        "//components/safe_browsing/content/browser/download:download_stats",
        "//components/safe_browsing/content/common:file_type_policies",
@@ -1856,7 +1856,7 @@
        "//components/safe_browsing/content/browser:safe_browsing_service",
        "//components/safe_browsing/content/browser/password_protection",
        "//components/safe_browsing/content/browser/password_protection:test_support",
-@@ -5682,7 +5681,6 @@ test("unit_tests") {
+@@ -5687,7 +5686,6 @@ test("unit_tests") {
      "//components/resources",
      "//components/safe_browsing:buildflags",
      "//components/safe_browsing/content/browser",

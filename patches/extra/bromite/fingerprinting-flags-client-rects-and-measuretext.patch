@@ -9,7 +9,7 @@
 
 --- a/chrome/browser/BUILD.gn
 +++ b/chrome/browser/BUILD.gn
-@@ -2377,6 +2377,7 @@ static_library("browser") {
+@@ -2379,6 +2379,7 @@ static_library("browser") {
      "//third_party/libyuv",
      "//third_party/metrics_proto",
      "//third_party/re2",
@@ -91,7 +91,7 @@
  #include "ui/accessibility/accessibility_features.h"
  #include "ui/base/ui_base_features.h"
  #include "ui/events/blink/blink_features.h"
-@@ -484,6 +485,10 @@ void SetRuntimeFeaturesFromCommandLine(c
+@@ -486,6 +487,10 @@ void SetRuntimeFeaturesFromCommandLine(c
        {wrf::ForceOverlayFullscreenVideo, switches::kForceOverlayFullscreenVideo,
         true},
        {wrf::EnableDirectSockets, switches::kRestrictedApiOrigins, false},
@@ -104,7 +104,7 @@
      if (command_line.HasSwitch(mapping.switch_name))
 --- a/third_party/blink/public/platform/web_runtime_features.h
 +++ b/third_party/blink/public/platform/web_runtime_features.h
-@@ -214,6 +214,8 @@ class WebRuntimeFeatures {
+@@ -215,6 +215,8 @@ class WebRuntimeFeatures {
    BLINK_PLATFORM_EXPORT static void EnableMediaControlsExpandGesture(bool);
    BLINK_PLATFORM_EXPORT static void EnableGetDisplayMedia(bool);
    BLINK_PLATFORM_EXPORT static void EnableAllowSyncXHRInPageDismissal(bool);
@@ -295,7 +295,7 @@
      "//components/webrtc:net_address_utils",
 --- a/third_party/blink/renderer/platform/exported/web_runtime_features.cc
 +++ b/third_party/blink/renderer/platform/exported/web_runtime_features.cc
-@@ -663,4 +663,12 @@ void WebRuntimeFeatures::EnableCLSScroll
+@@ -667,4 +667,12 @@ void WebRuntimeFeatures::EnableCLSScroll
    RuntimeEnabledFeatures::SetCLSScrollAnchoringEnabled(enable);
  }
  

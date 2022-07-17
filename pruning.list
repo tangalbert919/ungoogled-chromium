@@ -36,7 +36,6 @@ build/android/tests/symbolize/liba.so
 build/android/tests/symbolize/libb.so
 build/gn_helpers.pyc
 build/linux/sysroot_scripts/keyring.gpg
-build/util/android_chrome_version.pyc
 buildtools/linux64/gn
 buildtools/third_party/eu-strip/bin/eu-strip
 chrome/app/etw_events/MSG00001.bin
@@ -73,7 +72,7 @@ chrome/browser/resources/chromeos/accessibility/select_to_speak/earcons/null_sel
 chrome/browser/resources/media/mei_preload/preloaded_data.pb
 chrome/browser/ui/app_list/search/search_result_ranker/20190722_example_preprocessor_config.pb
 chrome/browser/ui/app_list/search/search_result_ranker/search_ranker_assets/20190923_example_preprocessor_config.pb
-chrome/build/pgo_profiles/chrome-linux-main-1654797479-b238efbb6a1b094b46f3fd1a86b359018e179d3d.profdata
+chrome/build/pgo_profiles/chrome-linux-5112-1657648418-b0ec5528b441de6f72e494550f05819acac805e1.profdata
 chrome/chrome_cleaner/parsers/shortcut_parser/target/data/lnk_parser_fuzzer/Network Share Test.lnk
 chrome/chrome_cleaner/parsers/shortcut_parser/target/data/lnk_parser_fuzzer/New folder - Shortcut.lnk
 chrome/chrome_cleaner/parsers/shortcut_parser/target/data/lnk_parser_fuzzer/long_name.lnk

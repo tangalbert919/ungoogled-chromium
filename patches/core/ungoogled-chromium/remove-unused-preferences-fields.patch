@@ -23,7 +23,7 @@
  // TODO(amalova): Make sure NetworkContextParams is configured correctly when
 --- a/chrome/app/settings_strings.grdp
 +++ b/chrome/app/settings_strings.grdp
-@@ -1857,69 +1857,9 @@
+@@ -1860,69 +1860,9 @@
    <message name="IDS_SETTINGS_NETWORK_PREDICTION_ENABLED_DESC_COOKIES_PAGE" desc="On the cookies page, the secondary text next to the checkbox that enables prediction of network actions.">
      Preloads pages that Chrome thinks you might visit. To do this, Chrome may use cookies, if you allow cookies, and may encrypt and send pages through Google to hide your identity from sites.
    </message>
@@ -507,7 +507,7 @@
      {"searchSuggestEnabled", prefs::kSearchSuggestEnabled,
       APIPermissionID::kPrivacy, APIPermissionID::kPrivacy},
      {"spellingServiceEnabled", spellcheck::prefs::kSpellCheckUseSpellingService,
-@@ -1084,18 +1078,6 @@ ExtensionFunction::ResponseAction SetPre
+@@ -1139,18 +1133,6 @@ ExtensionFunction::ResponseAction SetPre
          base::Value(browser_pref_value->GetBool()));
    }
  
@@ -526,7 +526,7 @@
    base::Value val =
        base::Value::FromUniquePtrValue(std::move(browser_pref_value));
  
-@@ -1191,17 +1173,6 @@ ExtensionFunction::ResponseAction ClearP
+@@ -1246,17 +1228,6 @@ ExtensionFunction::ResponseAction ClearP
    PreferenceAPI::Get(browser_context())
        ->RemoveExtensionControlledPref(extension_id(), browser_pref, scope);
  
@@ -2920,7 +2920,7 @@
  #include "components/signin/public/base/signin_buildflags.h"
  #include "components/strings/grit/components_chromium_strings.h"
  #include "components/strings/grit/components_strings.h"
-@@ -1479,44 +1478,6 @@ void AddPrivacyStrings(content::WebUIDat
+@@ -1481,44 +1480,6 @@ void AddPrivacyStrings(content::WebUIDat
      {"clearBrowsingData", IDS_SETTINGS_CLEAR_BROWSING_DATA},
      {"clearBrowsingDataDescription", IDS_SETTINGS_CLEAR_DATA_DESCRIPTION},
      {"titleAndCount", IDS_SETTINGS_TITLE_AND_COUNT},
@@ -2965,7 +2965,7 @@
      {"safeBrowsingSectionLabel", IDS_SETTINGS_SAFEBROWSING_SECTION_LABEL},
      {"syncAndGoogleServicesPrivacyDescription",
       IDS_SETTINGS_SYNC_AND_GOOGLE_SERVICES_PRIVACY_DESC_UNIFIED_CONSENT},
-@@ -2842,11 +2803,6 @@ void AddSiteSettingsStrings(content::Web
+@@ -2844,11 +2805,6 @@ void AddSiteSettingsStrings(content::Web
    html_source->AddLocalizedStrings(kSensorsLocalizedStrings);
  
    html_source->AddBoolean(
@@ -5216,7 +5216,7 @@
  #include "components/signin/public/identity_manager/identity_test_utils.h"
 --- a/tools/metrics/histograms/enums.xml
 +++ b/tools/metrics/histograms/enums.xml
-@@ -93786,7 +93786,6 @@ Full version information for the fingerp
+@@ -93811,7 +93811,6 @@ Full version information for the fingerp
    <int value="3" label="kRestoreOnStartup"/>
    <int value="4" label="kURLsToRestoreOnStartup"/>
    <int value="5" label="extensions::pref_names::kExtensions"/>
@@ -5224,7 +5224,7 @@
    <int value="7" label="kSearchProviderOverrides"/>
    <int value="8" label="kDefaultSearchProviderSearchURL (Obsolete 12/2016)"/>
    <int value="9" label="kDefaultSearchProviderKeyword (Obsolete 12/2016)"/>
-@@ -93801,10 +93800,7 @@ Full version information for the fingerp
+@@ -93826,10 +93825,7 @@ Full version information for the fingerp
    <int value="18" label="kSafeBrowsingIncidentsSent"/>
    <int value="19" label="kSwReporterPromptVersion"/>
    <int value="20" label="kSwReporterPromptReason"/>

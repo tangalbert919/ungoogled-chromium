@@ -27,8 +27,8 @@
    return true;
 --- a/chrome/browser/ui/views/location_bar/location_bar_view.cc
 +++ b/chrome/browser/ui/views/location_bar/location_bar_view.cc
-@@ -307,7 +307,8 @@ void LocationBarView::Init() {
-       params.types_enabled.push_back(PageActionIconType::kSideSearch);
+@@ -309,7 +309,8 @@ void LocationBarView::Init() {
+     }
      params.types_enabled.push_back(PageActionIconType::kSendTabToSelf);
      params.types_enabled.push_back(PageActionIconType::kClickToCall);
 -    params.types_enabled.push_back(PageActionIconType::kQRCodeGenerator);

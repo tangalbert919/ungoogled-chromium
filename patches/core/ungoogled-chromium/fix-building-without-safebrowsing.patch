@@ -2,7 +2,7 @@
 
 --- a/chrome/browser/BUILD.gn
 +++ b/chrome/browser/BUILD.gn
-@@ -623,8 +623,6 @@ static_library("browser") {
+@@ -627,8 +627,6 @@ static_library("browser") {
      "internal_auth.h",
      "interstitials/chrome_settings_page_helper.cc",
      "interstitials/chrome_settings_page_helper.h",
@@ -11,7 +11,7 @@
      "invalidation/profile_invalidation_provider_factory.cc",
      "invalidation/profile_invalidation_provider_factory.h",
      "language/accept_languages_service_factory.cc",
-@@ -1971,7 +1969,6 @@ static_library("browser") {
+@@ -1975,7 +1973,6 @@ static_library("browser") {
      "//chrome/browser/net:probe_message_proto",
      "//chrome/browser/new_tab_page/modules/drive:mojo_bindings",
      "//chrome/browser/new_tab_page/modules/photos:mojo_bindings",
@@ -19,7 +19,7 @@
      "//chrome/browser/new_tab_page/modules/task_module:mojo_bindings",
      "//chrome/browser/notifications",
      "//chrome/browser/notifications/scheduler:factory",
-@@ -3668,10 +3665,6 @@ static_library("browser") {
+@@ -3669,10 +3666,6 @@ static_library("browser") {
        "download/offline_item_model_manager_factory.h",
        "enterprise/connectors/analysis/analysis_service_settings.cc",
        "enterprise/connectors/analysis/analysis_service_settings.h",
@@ -30,7 +30,7 @@
        "enterprise/connectors/analysis/content_analysis_dialog.cc",
        "enterprise/connectors/analysis/content_analysis_dialog.h",
        "enterprise/connectors/analysis/content_analysis_downloads_delegate.cc",
-@@ -3928,10 +3921,6 @@ static_library("browser") {
+@@ -3929,10 +3922,6 @@ static_library("browser") {
        "new_tab_page/modules/photos/photos_service.h",
        "new_tab_page/modules/photos/photos_service_factory.cc",
        "new_tab_page/modules/photos/photos_service_factory.h",
@@ -41,7 +41,7 @@
        "new_tab_page/modules/task_module/task_module_handler.cc",
        "new_tab_page/modules/task_module/task_module_handler.h",
        "new_tab_page/modules/task_module/task_module_service.cc",
-@@ -7523,9 +7512,14 @@ static_library("browser") {
+@@ -7524,9 +7513,14 @@ static_library("browser") {
        "//components/safe_browsing/content/browser:safe_browsing_blocking_page",
        "//components/safe_browsing/content/browser/download:download_stats",
        "//components/safe_browsing/content/common:file_type_policies",
@@ -1762,7 +1762,7 @@
                                 std::move(callback),
 --- a/chrome/test/BUILD.gn
 +++ b/chrome/test/BUILD.gn
-@@ -1334,7 +1334,6 @@ if (!is_android) {
+@@ -1343,7 +1343,6 @@ if (!is_android) {
        "//components/resources",
        "//components/safe_browsing:buildflags",
        "//components/safe_browsing/content/browser",
@@ -1770,7 +1770,7 @@
        "//components/safe_browsing/content/browser:safe_browsing_service",
        "//components/safe_browsing/content/browser/password_protection",
        "//components/safe_browsing/content/browser/password_protection:test_support",
-@@ -5701,7 +5700,6 @@ test("unit_tests") {
+@@ -5714,7 +5713,6 @@ test("unit_tests") {
      "//components/resources",
      "//components/safe_browsing:buildflags",
      "//components/safe_browsing/content/browser",

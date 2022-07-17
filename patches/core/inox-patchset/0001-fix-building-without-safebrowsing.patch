@@ -1,6 +1,6 @@
 --- a/chrome/browser/BUILD.gn
 +++ b/chrome/browser/BUILD.gn
-@@ -2223,7 +2223,6 @@ static_library("browser") {
+@@ -2229,7 +2229,6 @@ static_library("browser") {
      "//components/reputation/core:proto",
      "//components/resources",
      "//components/safe_browsing/content/browser",
@@ -8,7 +8,7 @@
      "//components/safe_browsing/content/browser:safe_browsing_service",
      "//components/safe_browsing/content/browser/password_protection",
      "//components/safe_browsing/content/browser/web_ui",
-@@ -3648,8 +3647,6 @@ static_library("browser") {
+@@ -3649,8 +3648,6 @@ static_library("browser") {
        "download/download_commands.h",
        "download/download_crx_util.cc",
        "download/download_crx_util.h",
@@ -680,7 +680,7 @@
    // SimpleURLLoader -> (owned loader, extension id).
 --- a/chrome/browser/metrics/chrome_metrics_service_client.cc
 +++ b/chrome/browser/metrics/chrome_metrics_service_client.cc
-@@ -861,9 +861,6 @@ void ChromeMetricsServiceClient::Registe
+@@ -865,9 +865,6 @@ void ChromeMetricsServiceClient::Registe
    metrics_service_->RegisterMetricsProvider(
        std::make_unique<HttpsEngagementMetricsProvider>());
  
@@ -1069,7 +1069,7 @@
      html = ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
 --- a/chrome/renderer/chrome_content_renderer_client.cc
 +++ b/chrome/renderer/chrome_content_renderer_client.cc
-@@ -95,7 +95,6 @@
+@@ -96,7 +96,6 @@
  #include "components/paint_preview/buildflags/buildflags.h"
  #include "components/password_manager/core/common/password_manager_features.h"
  #include "components/safe_browsing/buildflags.h"
@@ -1077,7 +1077,7 @@
  #include "components/spellcheck/spellcheck_buildflags.h"
  #include "components/subresource_filter/content/renderer/subresource_filter_agent.h"
  #include "components/subresource_filter/content/renderer/unverified_ruleset_dealer.h"
-@@ -424,12 +423,8 @@ void ChromeContentRendererClient::Render
+@@ -425,12 +424,8 @@ void ChromeContentRendererClient::Render
    subresource_filter_ruleset_dealer_ =
        std::make_unique<subresource_filter::UnverifiedRulesetDealer>();
  

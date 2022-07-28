@@ -254,7 +254,7 @@
  #include "content/public/browser/browser_task_traits.h"
 --- a/chrome/browser/download/download_item_model.cc
 +++ b/chrome/browser/download/download_item_model.cc
-@@ -826,6 +826,7 @@ void DownloadItemModel::ExecuteCommand(D
+@@ -840,6 +840,7 @@ void DownloadItemModel::ExecuteCommand(D
        DownloadUIModel::ExecuteCommand(download_commands, command);
        break;
      case DownloadCommands::DEEP_SCAN:
@@ -262,7 +262,7 @@
        safe_browsing::SafeBrowsingService* sb_service =
            g_browser_process->safe_browsing_service();
        if (!sb_service)
-@@ -851,6 +852,7 @@ void DownloadItemModel::ExecuteCommand(D
+@@ -865,6 +866,7 @@ void DownloadItemModel::ExecuteCommand(D
            safe_browsing::DeepScanningRequest::DeepScanTrigger::
                TRIGGER_APP_PROMPT,
            safe_browsing::DownloadCheckResult::UNKNOWN, std::move(settings));
@@ -5216,7 +5216,7 @@
  #include "components/signin/public/identity_manager/identity_test_utils.h"
 --- a/tools/metrics/histograms/enums.xml
 +++ b/tools/metrics/histograms/enums.xml
-@@ -93811,7 +93811,6 @@ Full version information for the fingerp
+@@ -93848,7 +93848,6 @@ Full version information for the fingerp
    <int value="3" label="kRestoreOnStartup"/>
    <int value="4" label="kURLsToRestoreOnStartup"/>
    <int value="5" label="extensions::pref_names::kExtensions"/>
@@ -5224,7 +5224,7 @@
    <int value="7" label="kSearchProviderOverrides"/>
    <int value="8" label="kDefaultSearchProviderSearchURL (Obsolete 12/2016)"/>
    <int value="9" label="kDefaultSearchProviderKeyword (Obsolete 12/2016)"/>
-@@ -93826,10 +93825,7 @@ Full version information for the fingerp
+@@ -93863,10 +93862,7 @@ Full version information for the fingerp
    <int value="18" label="kSafeBrowsingIncidentsSent"/>
    <int value="19" label="kSwReporterPromptVersion"/>
    <int value="20" label="kSwReporterPromptReason"/>

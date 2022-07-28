@@ -1,6 +1,6 @@
 --- a/chrome/browser/chrome_content_browser_client.cc
 +++ b/chrome/browser/chrome_content_browser_client.cc
-@@ -787,6 +787,9 @@ bool HandleNewTabPageLocationOverride(
+@@ -789,6 +789,9 @@ bool HandleNewTabPageLocationOverride(
  
    std::string ntp_location =
        profile->GetPrefs()->GetString(prefs::kNewTabPageLocationOverride);

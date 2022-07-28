@@ -73,7 +73,7 @@
    auto delegate = std::make_unique<AccuracyServiceDelegate>(profile);
 --- a/chrome/browser/chrome_content_browser_client.cc
 +++ b/chrome/browser/chrome_content_browser_client.cc
-@@ -4384,11 +4384,13 @@ ChromeContentBrowserClient::CreateThrott
+@@ -4386,11 +4386,13 @@ ChromeContentBrowserClient::CreateThrott
                     &throttles);
  #endif
  
@@ -87,7 +87,7 @@
  
  // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
  // of lacros-chrome is complete.
-@@ -5781,26 +5783,7 @@ ChromeContentBrowserClient::GetSafeBrows
+@@ -5783,26 +5785,7 @@ ChromeContentBrowserClient::GetSafeBrows
      const std::vector<std::string>& allowlist_domains) {
    DCHECK_CURRENTLY_ON(BrowserThread::IO);
  
@@ -115,7 +115,7 @@
  }
  
  safe_browsing::RealTimeUrlLookupServiceBase*
-@@ -5821,11 +5804,6 @@ ChromeContentBrowserClient::GetUrlLookup
+@@ -5823,11 +5806,6 @@ ChromeContentBrowserClient::GetUrlLookup
          GetForProfile(profile);
    }
  #endif

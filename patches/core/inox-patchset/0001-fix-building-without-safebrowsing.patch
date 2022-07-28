@@ -144,7 +144,7 @@
                                                     host_content_settings_map_);
 --- a/chrome/browser/chrome_content_browser_client.cc
 +++ b/chrome/browser/chrome_content_browser_client.cc
-@@ -966,34 +966,6 @@ void SetApplicationLocaleOnIOThread(cons
+@@ -968,34 +968,6 @@ void SetApplicationLocaleOnIOThread(cons
    GetIOThreadApplicationLocale() = locale;
  }
  
@@ -179,7 +179,7 @@
  #if BUILDFLAG(ENABLE_EXTENSIONS)
  
  AppLoadedInTabSource ClassifyAppLoadedInTabSource(
-@@ -1509,7 +1481,6 @@ void ChromeContentBrowserClient::PostAft
+@@ -1511,7 +1483,6 @@ void ChromeContentBrowserClient::PostAft
    InitNetworkContextsParentDirectory();
  
    DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -187,7 +187,7 @@
  }
  
  bool ChromeContentBrowserClient::IsBrowserStartupComplete() {
-@@ -4376,14 +4347,9 @@ ChromeContentBrowserClient::CreateThrott
+@@ -4378,14 +4349,9 @@ ChromeContentBrowserClient::CreateThrott
    throttles.push_back(std::make_unique<PolicyBlocklistNavigationThrottle>(
        handle, handle->GetWebContents()->GetBrowserContext()));
  
@@ -203,7 +203,7 @@
        base::BindOnce(&HandleSSLErrorWrapper), base::BindOnce(&IsInHostedApp),
        base::BindOnce(
            &ShouldIgnoreSslInterstitialBecauseNavigationDefaultedToHttps)));
-@@ -4418,16 +4384,6 @@ ChromeContentBrowserClient::CreateThrott
+@@ -4420,16 +4386,6 @@ ChromeContentBrowserClient::CreateThrott
                     &throttles);
  #endif
  
@@ -288,7 +288,7 @@
  
    // Whether the download is currently being revived.
    bool is_being_revived_;
-@@ -129,7 +129,7 @@ DownloadItemModelData::DownloadItemModel
+@@ -133,7 +133,7 @@ DownloadItemModelData::DownloadItemModel
      : should_show_in_shelf_(true),
        was_ui_notified_(false),
        should_prefer_opening_in_browser_(false),
@@ -297,7 +297,7 @@
        is_being_revived_(false) {}
  
  #if BUILDFLAG(FULL_SAFE_BROWSING)
-@@ -429,13 +429,13 @@ void DownloadItemModel::SetShouldPreferO
+@@ -443,13 +443,13 @@ void DownloadItemModel::SetShouldPreferO
    data->should_prefer_opening_in_browser_ = preference;
  }
  
@@ -314,7 +314,7 @@
    DownloadItemModelData* data = DownloadItemModelData::GetOrCreate(download_);
    data->danger_level_ = danger_level;
  }
-@@ -655,9 +655,6 @@ bool DownloadItemModel::IsCommandEnabled
+@@ -669,9 +669,6 @@ bool DownloadItemModel::IsCommandEnabled
        // filename. Don't base an "Always open" decision based on it. Also
        // exclude extensions.
        return download_->CanOpenDownload() &&

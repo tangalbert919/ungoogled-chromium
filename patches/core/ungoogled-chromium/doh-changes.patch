@@ -1,6 +1,6 @@
 --- a/chrome/common/chrome_features.cc
 +++ b/chrome/common/chrome_features.cc
-@@ -328,12 +328,7 @@ const base::Feature kKeepForceInstalledP
+@@ -307,12 +307,7 @@ const base::Feature kKeepForceInstalledP
  // Enable DNS over HTTPS (DoH).
  const base::Feature kDnsOverHttps {
    "DnsOverHttps",

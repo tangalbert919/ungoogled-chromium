@@ -79,16 +79,16 @@
      <div class="bulletpoints first">$i18nRaw{incognitoTabFeatures}</div>
 --- a/chrome/browser/resources/settings/a11y_page/a11y_page.html
 +++ b/chrome/browser/resources/settings/a11y_page/a11y_page.html
-@@ -21,7 +21,7 @@
+@@ -22,7 +22,7 @@
                external$="[[captionSettingsOpensExternally_]]">
            </cr-link-row>
          </template>
 -        <template is="dom-if" if="[[!captionSettingsOpensExternally_]]">
 +        <template is="dom-if" if="[[false]]">
            <cr-link-row id="captions"
+               class="hr"
                label="$i18n{captionsTitle}"
-               on-click="onCaptionsClick_"
-@@ -51,10 +51,6 @@
+@@ -53,10 +53,6 @@
              label="$i18n{accessibleImageLabelsTitle}"
              sub-label="$i18n{accessibleImageLabelsSubtitle}">
          </settings-toggle-button>
@@ -199,10 +199,11 @@
          class="hr"
 --- a/chrome/browser/resources/settings/privacy_page/security_page.html
 +++ b/chrome/browser/resources/settings/privacy_page/security_page.html
-@@ -107,10 +107,3 @@
-         sub-label="$i18n{manageCertificatesDescription}"
-         on-click="onManageCertificatesClick_"></cr-link-row>
+@@ -134,11 +134,3 @@
+           on-click="onChromeCertificatesClick_"></cr-link-row>
+     </template>
  </if>
+-
 -    <cr-link-row id="advanced-protection-program-link"
 -        class="hr"
 -        label="$i18n{advancedProtectionProgramTitle}"
@@ -225,7 +226,7 @@
            prefs.default_search_provider_data.template_url_data)]]">
 --- a/chrome/browser/resources/settings/settings_page/settings_subpage.html
 +++ b/chrome/browser/resources/settings/settings_page/settings_subpage.html
-@@ -80,7 +80,7 @@
+@@ -89,7 +89,7 @@
        </template>
        <h1 class="cr-title-text">[[pageTitle]]</h1>
        <slot name="subpage-title-extra"></slot>
@@ -236,7 +237,7 @@
          </cr-icon-button>
 --- a/chrome/browser/ui/views/profiles/profile_menu_view.cc
 +++ b/chrome/browser/ui/views/profiles/profile_menu_view.cc
-@@ -175,6 +175,7 @@ void ProfileMenuView::BuildMenu() {
+@@ -174,6 +174,7 @@ void ProfileMenuView::BuildMenu() {
  }
  
  gfx::ImageSkia ProfileMenuView::GetSyncIcon() const {
@@ -244,7 +245,7 @@
    Profile* profile = browser()->profile();
    if (profile->IsOffTheRecord() || profile->IsGuestSession())
      return gfx::ImageSkia();
-@@ -461,8 +462,7 @@ void ProfileMenuView::BuildIdentity() {
+@@ -460,8 +461,7 @@ void ProfileMenuView::BuildIdentity() {
          menu_subtitle_);
    } else {
      menu_title_ = std::u16string();
@@ -274,14 +275,3 @@
    action_button_ =
        actions_container->AddChildView(std::make_unique<views::MdTextButton>(
            base::BindRepeating(&SadTabView::PerformAction,
---- a/chrome/common/chrome_features.cc
-+++ b/chrome/common/chrome_features.cc
-@@ -783,7 +783,7 @@ const base::Feature kPrerenderFallbackTo
-     "PrerenderFallbackToPreconnect", base::FEATURE_ENABLED_BY_DEFAULT};
- 
- const base::Feature kPrivacyGuide{"PrivacyGuide",
--                                  base::FEATURE_ENABLED_BY_DEFAULT};
-+                                  base::FEATURE_DISABLED_BY_DEFAULT};
- 
- const base::Feature kPrivacyGuide2{"PrivacyGuide2",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};

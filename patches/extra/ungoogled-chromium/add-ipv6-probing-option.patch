@@ -13,25 +13,25 @@
  #endif  // CHROME_BROWSER_UNGOOGLED_FLAG_ENTRIES_H_
 --- a/net/base/features.cc
 +++ b/net/base/features.cc
-@@ -318,5 +318,7 @@ const base::FeatureParam<int>
-         &kOptimizeNetworkBuffers, "filter_source_stream_buffer_size",
-         32 * 1024};
- 
-+const base::Feature kSetIpv6ProbeFalse{"SetIpv6ProbeFalse", base::FEATURE_DISABLED_BY_DEFAULT};
+@@ -331,4 +331,7 @@ constexpr int kStorageAccessAPIDefaultIm
+ const base::FeatureParam<int> kStorageAccessAPIImplicitGrantLimit{
+     &kStorageAccessAPI, "storage-access-api-implicit-grant-limit",
+     kStorageAccessAPIDefaultImplicitGrantLimit};
 +
- }  // namespace features
- }  // namespace net
++const base::Feature kSetIpv6ProbeFalse{"SetIpv6ProbeFalse",
++    base::FEATURE_DISABLED_BY_DEFAULT};
+ }  // namespace net::features
 --- a/net/base/features.h
 +++ b/net/base/features.h
-@@ -443,6 +443,8 @@ NET_EXPORT extern const base::FeaturePar
+@@ -463,6 +463,8 @@ NET_EXPORT extern const int kStorageAcce
  NET_EXPORT extern const base::FeatureParam<int>
-     kOptimizeNetworkBuffersFilterSourceStreamBufferSize;
+     kStorageAccessAPIImplicitGrantLimit;
  
 +NET_EXPORT extern const base::Feature kSetIpv6ProbeFalse;
 +
- }  // namespace features
- }  // namespace net
+ }  // namespace net::features
  
+ #endif  // NET_BASE_FEATURES_H_
 --- a/net/dns/host_resolver_manager.cc
 +++ b/net/dns/host_resolver_manager.cc
 @@ -153,11 +153,6 @@ const unsigned kMinimumTTLSeconds = kCac
